@@ -8,11 +8,8 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import br.edu.ifsp.dmo.listadecontatos.R
 import br.edu.ifsp.dmo.listadecontatos.databinding.ActivityMainBinding
 import br.edu.ifsp.dmo.listadecontatos.databinding.NewContactDialogBinding
@@ -23,13 +20,28 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private val TAG = "CONTACTS"
     private lateinit var binding: ActivityMainBinding
+    private lateinit var bindingDialog: NewContactDialogBinding
     private lateinit var adapter: ListContactAdapter
+    private var isDialogOpen = false
     private val listDatasource = ArrayList<Contact>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        bindingDialog = NewContactDialogBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (savedInstanceState != null) {
+            val name = savedInstanceState.getString("name")
+            val phone = savedInstanceState.getString("phone");
+            isDialogOpen = savedInstanceState.getBoolean("isDialogOpen")
+
+            if (isDialogOpen && name != null && phone != null) {
+                bindingDialog.editTextName.setText(name)
+                bindingDialog.editTextPhone.setText(phone)
+                handleNewContactDialog()
+            }
+        }
 
         Log.v(TAG, "Executando o onCreate()")
         configClickListener()
@@ -71,8 +83,8 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-       val selectContact = binding.listViewContacts.adapter.getItem(position) as Contact
-        var uri = "tel:${selectContact.phone}"
+        val selectContact = binding.listViewContacts.adapter.getItem(position) as Contact
+        val uri = "tel:${selectContact.phone}"
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse(uri)
         startActivity(intent)
@@ -93,13 +105,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     private fun updateListDatasource() {
         listDatasource.clear()
-        listDatasource.addAll(ContactDao.findAll())
+        listDatasource.addAll(ContactDao.findAll().sortedBy(Contact::name))
         adapter.notifyDataSetChanged()
     }
 
     private fun handleNewContactDialog() {
-        val bindingDialog = NewContactDialogBinding.inflate(layoutInflater)
-
         val builderDialog = AlertDialog.Builder(this)
         builderDialog.setView(bindingDialog.root)
             .setTitle(R.string.new_contact)
@@ -114,15 +124,31 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
                         )
                     )
                     updateListDatasource()
+                    isDialogOpen = false
                     dialog.dismiss()
                 })
             .setNegativeButton(
                 R.string.btn_dialog_cancel,
                 DialogInterface.OnClickListener { dialog, which ->
                     Log.v(TAG, "Cancelar novo contato")
+                    isDialogOpen = false
                     dialog.cancel()
                 })
-        
+            .setOnDismissListener {
+                isDialogOpen = false
+            }
+
         builderDialog.create().show()
+        isDialogOpen = true
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val name = bindingDialog.editTextName.text.toString()
+        val phone =  bindingDialog.editTextPhone.text.toString()
+
+        outState.putString("name", name)
+        outState.putString("phone", phone)
+        outState.putBoolean("isDialogOpen", isDialogOpen)
     }
 }
