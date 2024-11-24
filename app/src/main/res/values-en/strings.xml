@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Contacts List</string>
+    <string name="new_contact">New Contact</string>
+    <string name="hint_contact_name">Contact Name</string>
+    <string name="hint_contact_phone_number">Phone Number</string>
+    <string name="btn_dialog_save">Save</string>
+    <string name="btn_dialog_cancel">Cancel</string>
+    <string name="app_title">Contacts List</string>
+</resources>
