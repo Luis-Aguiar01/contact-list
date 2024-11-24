@@ -9,18 +9,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:textAllCaps="true"
-        android:textSize="16sp"
+        android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/text_view_item_phone_number"
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/text_view_item_phone_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        app:layout_constraintStart_toStartOf="@id/text_view_item_name"
-        app:layout_constraintTop_toBottomOf="@id/text_view_item_name" />
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_view_item_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/text_view_item_name"
+        app:layout_constraintTop_toTopOf="@+id/text_view_item_name"
+        android:textColor="@color/white"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

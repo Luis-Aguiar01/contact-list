@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        bindingDialog = NewContactDialogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         if (savedInstanceState != null) {
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             val phone = savedInstanceState.getString("phone");
             isDialogOpen = savedInstanceState.getBoolean("isDialogOpen")
 
-            if (isDialogOpen && name != null && phone != null) {
+            if (isDialogOpen) {
                 bindingDialog.editTextName.setText(name)
                 bindingDialog.editTextPhone.setText(phone)
                 handleNewContactDialog()
@@ -110,13 +109,14 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
     }
 
     private fun handleNewContactDialog() {
+        bindingDialog = NewContactDialogBinding.inflate(layoutInflater)
         val builderDialog = AlertDialog.Builder(this)
         builderDialog.setView(bindingDialog.root)
             .setTitle(R.string.new_contact)
             .setPositiveButton(
                 R.string.btn_dialog_save,
                 DialogInterface.OnClickListener { dialog, which ->
-                    Log.v(TAG, "Salvar contato")
+                    Log.v(TAG, getString(R.string.btn_dialog_save))
                     ContactDao.insert(
                         Contact(
                             bindingDialog.editTextName.text.toString(),
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             .setNegativeButton(
                 R.string.btn_dialog_cancel,
                 DialogInterface.OnClickListener { dialog, which ->
-                    Log.v(TAG, "Cancelar novo contato")
+                    Log.v(TAG, getString(R.string.btn_dialog_cancel))
                     isDialogOpen = false
                     dialog.cancel()
                 })
