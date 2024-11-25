@@ -36,12 +36,9 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
             isDialogOpen = savedInstanceState.getBoolean("isDialogOpen")
 
             if (isDialogOpen) {
-                bindingDialog.editTextName.setText(name)
-                bindingDialog.editTextPhone.setText(phone)
-                handleNewContactDialog()
+                handleNewContactDialog(name, phone)
             }
         }
-
         Log.v(TAG, "Executando o onCreate()")
         configClickListener()
         configListView()
@@ -108,8 +105,11 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
         adapter.notifyDataSetChanged()
     }
 
-    private fun handleNewContactDialog() {
+    private fun handleNewContactDialog(name: String? = "", phone: String? = "") {
         bindingDialog = NewContactDialogBinding.inflate(layoutInflater)
+        bindingDialog.editTextPhone.setText(phone)
+        bindingDialog.editTextName.setText(name)
+
         val builderDialog = AlertDialog.Builder(this)
         builderDialog.setView(bindingDialog.root)
             .setTitle(R.string.new_contact)
@@ -144,11 +144,12 @@ class MainActivity : AppCompatActivity(), OnItemClickListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val name = bindingDialog.editTextName.text.toString()
-        val phone =  bindingDialog.editTextPhone.text.toString()
-
-        outState.putString("name", name)
-        outState.putString("phone", phone)
+        if (isDialogOpen) {
+            val name = bindingDialog.editTextName.text.toString()
+            val phone =  bindingDialog.editTextPhone.text.toString()
+            outState.putString("name", name)
+            outState.putString("phone", phone)
+        }
         outState.putBoolean("isDialogOpen", isDialogOpen)
     }
 }
